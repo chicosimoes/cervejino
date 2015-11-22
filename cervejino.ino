@@ -6,7 +6,7 @@ SevSeg displayTemp; //Instantiate a seven segment object
 
 int temperturaPino = 2;
 int buzinaPino = 11;
-int temperatutaRampa = 65;
+int temperatutaRampa = 40;
 OneWire ds(temperturaPino);
 
 int valorcalor = 0;
