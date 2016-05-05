@@ -1,15 +1,43 @@
-
 #include <OneWire.h>
 
-#include "SevSeg.h"
-SevSeg displayTemp; //Instantiate a seven segment object
 
-int temperturaPino = 2;
-int buzinaPino = 11;
-int temperatutaRampa = 40;
-OneWire ds(temperturaPino);
+int calorPino = 11;
+int RelePino = 10;
+int temperatutaRampa = 10;
+int tempMatura = 0;
+OneWire ds(calorPino);
 
-int valorcalor = 0;
+
+void setup() {
+   
+   pinMode(RelePino, OUTPUT);
+   Serial.begin(9600);
+}
+
+void loop()
+{
+tempMatura = getTemp(); 
+
+if(tempMatura>temperatutaRampa) {
+digitalWrite(RelePino, HIGH);
+//delay(15000);
+//digitalWrite(RelePino, LOW);
+}
+else
+{
+  digitalWrite(RelePino, LOW);
+}
+
+Serial.print("A temperatura igual a:");
+Serial.println(tempMatura);
+
+ 
+
+
+delay(1000);
+}
+
+
 
 float getTemp(){
 byte data[12];
@@ -39,42 +67,8 @@ data[i] = ds.read();
 ds.reset_search();
 byte MSB = data[1];
 byte LSB = data[0];
+
 float TRead = ((MSB << 8) | LSB);
 int Temperature = int(TRead / 16);
 return Temperature;
 }
-
-void setup() {
-   byte numDigits = 4;
-   byte digitPins[] = {12, 10, 9, 6};
-   byte segmentPins[] = {A1, 3, 4, 5, A0, 7, 8};
-   displayTemp.begin(COMMON_ANODE, numDigits, digitPins, segmentPins);
-   
-   pinMode(buzinaPino, OUTPUT);
-   Serial.begin(9600);
-}
-
-void loop()
-{
-valorcalor = getTemp(); 
-
-if(valorcalor>temperatutaRampa) {
-digitalWrite(buzinaPino, HIGH);
-}
-else
-{
-  digitalWrite(buzinaPino, LOW);
-}
-
-Serial.print("A temperatura igual a:");
-Serial.println(valorcalor);
-
-   displayTemp.setNumber(valorcalor,3); // Displays '3.141'
-   displayTemp.refreshDisplay();
-   displayTemp.setBrightness(50);
-
-
-//delay(5);
-}
-
-
