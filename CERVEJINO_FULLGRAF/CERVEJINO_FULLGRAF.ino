@@ -3,7 +3,13 @@
 
 #include "U8glib.h"
 #include <OneWire.h>
+#include "DHT.h"
 
+#define DHTPIN 2     // what digital pin we're connected to
+int h = 0;
+// Uncomment whatever type you're using!
+#define DHTTYPE DHT11 
+DHT dht(DHTPIN, DHTTYPE);
 
 int calorPino = 11;
 int RelePino = 10;
@@ -118,11 +124,14 @@ void u8g_Tela1()  //Tela 1 -
   u8g.drawStr( 74, 15, "MATURA");  
   u8g.drawFrame(64,0,64,64);  
   u8g.drawFrame(66,2,60,60);
-  u8g.drawStr( 75, 35, dtostrf(tempMatura, 5, 2, str));
+  float h = dht.readHumidity();
+  char temp[5];
+  u8g.drawStr( 75, 35,dtostrf(h,3,1,temp));
   u8g.drawStr( 90, 55, "\260C"); 
 }  
 void draw() //Rotina Desenho  
 {
+  
   u8g_prepare();    
     u8g_Tela1(); 
 }
@@ -130,12 +139,6 @@ void draw() //Rotina Desenho
 void drawTest(void) {
   u8g.setFont(u8g_font_unifont);
   u8g.drawStr( 0, 20, "INICIANDO");
-}
-
-void checaRele(){
-  /////ACIONAMENTO DO RELE//////////
-  
-
 }
 
 void setup() {
@@ -153,8 +156,11 @@ void setup() {
 
 void loop() 
 { 
-  tempMatura = getTemp(); 
-delay(1000); 
+  u8g.firstPage();  
+  do {;
+    draw();
+  } while( u8g.nextPage() );
+/*  
 if(tempMatura>temperatutaRampa) {
 digitalWrite(RelePino, HIGH);
 delay(15000);
@@ -167,15 +173,7 @@ else
 
 Serial.print("A temperatura igual a:");
 Serial.println(tempMatura);
-
-  delay(2000);
-u8g.firstPage();  
-  do {;
-    draw();
-  } while( u8g.nextPage() );
-
-  
-
+*/
 
 delay(1000); 
 } 
