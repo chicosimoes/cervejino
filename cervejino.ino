@@ -1,11 +1,11 @@
 #include <OneWire.h>
 
 
-int calorPino = 11;
+int calor1Pino = 11;
 int RelePino = 10;
-int temperatutaRampa = 19;
+int temperatutaRampa = 11;
 int tempMatura = 0;
-OneWire ds(calorPino);
+OneWire ds(calor1Pino);
 #define NUMLEITURAS 10
 
 float j=0;

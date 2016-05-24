@@ -44,20 +44,27 @@
 */
 
 #include "U8glib.h"
-#include "M2tk.h"
-#include "utility/m2ghu8g.h"
-#include "DHT.h"
-#include "OneWire.h"
+//#include "M2tk.h"
+//#include "utility/m2ghu8g.h"
+//#include "DHT.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
-#define DHTPIN 2     // what digital pin we're connected to
+int temperaturaMat = 10; // define a temperatira de trashroad para maturacao
+int RelePinoMat = 10;  // define quel o pino do rele de maturacao
+
+int temperaturaFer = 19; // define a temperatira de trashroad para fermentacao
+int RelePinoFer =7;  // define quel o pino do rele de fermentacao
+
+//#define DHTPIN 2     // what digital pin we're connected to
 
 // Uncomment whatever type you're using!
-#define DHTTYPE DHT11 
-DHT dht(DHTPIN, DHTTYPE);
+//#define DHTTYPE DHT11 
+//DHT dht(DHTPIN, DHTTYPE);
 //
 
-int32_t last_action_time = 0;
-uint8_t is_menu_active = 1;
+//int32_t last_action_time = 0;
+//uint8_t is_menu_active = 1;
 
 #define NUMLEITURAS 3
 //#define TERMOMETRO
@@ -69,6 +76,15 @@ int mediaMat = 0;
 //float f = getTemp();
 
 //#ifdef TERMOMETRO
+#define ONE_WIRE_BUS_1 11
+#define ONE_WIRE_BUS_2 12
+
+OneWire oneWire_MAT(ONE_WIRE_BUS_1);
+OneWire oneWire_FER(ONE_WIRE_BUS_2);
+
+DallasTemperature sensor_MAT(&oneWire_MAT);
+DallasTemperature sensor_FER(&oneWire_FER);
+/*
 int termometroPino = 11;
 OneWire ds(termometroPino);
 
@@ -104,6 +120,7 @@ float getTemp(){
  int Temperature = int(TRead / 16);
  return Temperature;
 }
+*/
 
 float leiturasFer[NUMLEITURAS];
 int indexFer = 0;
@@ -121,15 +138,15 @@ U8GLIB_ST7920_128X64_1X u8g( 6, 5, 4, U8G_PIN_NONE);
 // uint8_t uiKeySelectPin = 4;
 
 // DOGM132, DOGM128 and DOGXL160 shield
-uint8_t uiKeyUpPin = 10;         
-uint8_t uiKeyDownPin = 8;
-uint8_t uiKeySelectPin = 9;
+//uint8_t uiKeyUpPin = 10;         
+//uint8_t uiKeyDownPin = 8;
+//uint8_t uiKeySelectPin = 9;
 
 //================================================================
 // m2tklib forward declarations
 
-extern M2tk m2;
-M2_EXTERN_ALIGN(el_top);
+//extern M2tk m2;
+//M2_EXTERN_ALIGN(el_top);
 
 
 /*
@@ -147,7 +164,7 @@ void draw_rectangle(uint8_t x, uint8_t y) {
 }
 */
 
- M2_ROOT(el_show, NULL, "cervejino", &el_show);
+// M2_ROOT(el_show, NULL, "cervejino", &el_show);
 
 uint8_t draw_lcd(void)  //Maturacao-  
 {
@@ -231,7 +248,7 @@ M2_VLIST(el_menu_vlist, NULL, list_menu);
 
 //M2tk m2(&el_top, m2_es_arduino, m2_eh_4bs, m2_gh_u8g_ffs);
 
-
+/*
 uint8_t n1 = 0;
 uint8_t n2 =  0;
 
@@ -250,13 +267,13 @@ M2_ALIGN(el_top, "-1|1W32H32", &el_gridlist);
 M2tk m2(&el_top, m2_es_arduino_rotary_encoder, m2_eh_4bd, m2_gh_u8g_bf);
 
 void fn_ok(m2_el_fnarg_p fnarg) {
-  /* do something with the number */
+  // do something with the number /
 
   m2.setRoot(&el_show);
 
 }
 
-
+*/
 
 
 //================================================================
@@ -270,7 +287,7 @@ void draw_graphics(void) {
       // menu is on the right, put the rectangle to the left
       ///////
   totalMat -= leiturasMat[indexMat];               // subtrair a última leitura
-  leiturasMat[indexMat] = dht.readTemperature() ; // ler do sensor
+  leiturasMat[indexMat] = sensor_MAT.getTempCByIndex(0); // ler do sensor
   totalMat += leiturasMat[indexMat];               // adicionar leitura ao total
   indexMat = (indexMat + 1);                    // avançar ao próximo índice
 
@@ -281,7 +298,7 @@ void draw_graphics(void) {
 
       //////
     totalFer -= leiturasFer[indexFer];               // subtrair a última leitura
-  leiturasFer[indexFer] = getTemp() ; // ler do sensor
+  leiturasFer[indexFer] = sensor_FER.getTempCByIndex(0) ; // ler do sensor
   totalFer += leiturasFer[indexFer];               // adicionar leitura ao total
   indexFer = (indexFer + 1);                    // avançar ao próximo índice
 
@@ -354,6 +371,7 @@ uint8_t update_graphics(void) {
 //================================================================
 // overall draw procedure for u8glib
 
+/*
 void draw(void) {
 m2.getRoot();
 // uint8_t m2_GetKey();
@@ -379,20 +397,47 @@ m2.getRoot();
  
  //m2.draw();
 
-
+*/
 //================================================================
 // Arduino setup and loop
 
+void mudaRele(void){
+  
+  if(mediaMat>temperaturaMat) {
+digitalWrite(RelePinoMat, HIGH);
+//delay(15000);
+//digitalWrite(RelePino, LOW);
+}
+else
+{
+  digitalWrite(RelePinoMat, LOW);
+}
+  if(mediaFer>temperaturaFer) {
+digitalWrite(RelePinoFer, HIGH);
+//delay(15000);
+//digitalWrite(RelePino, LOW);
+}
+else
+{
+  digitalWrite(RelePinoFer, LOW);
+}
+}
+
+
 void setup(void) {
+  
+    sensor_MAT.begin();
+    sensor_FER.begin();
+  
   // Connect u8glib with m2tklib
-  m2_SetU8g(u8g.getU8g(), m2_u8g_box_icon);
+ // m2_SetU8g(u8g.getU8g(), m2_u8g_box_icon);
 
   // Assign u8g font to index 0
-  m2.setFont(0, u8g_font_7x13);
+//  m2.setFont(0, u8g_font_7x13);
 
   // Setup keys
-  m2.setPin(M2_KEY_SELECT, uiKeySelectPin);
-  m2.setPin(M2_KEY_NEXT, uiKeyDownPin);
+ // m2.setPin(M2_KEY_SELECT, uiKeySelectPin);
+ // m2.setPin(M2_KEY_NEXT, uiKeyDownPin);
   
   for (int i = 0; i < NUMLEITURAS; i++)
    leiturasMat[i] = 0;
@@ -413,7 +458,10 @@ void loop() {
       //last_action_time = 0;
       draw_graphics();
        } while( u8g.nextPage() );
-    // }
+    mudaRele();
+  
+
+// }
        
    // else 
    //   u8g.firstPage();  
