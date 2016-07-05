@@ -95,7 +95,7 @@ M2_EXTERN_ALIGN(top_el_x2l_menu);
 
 //M2_LABELFN(el_labefn, NULL, label_cb);
 //M2_U32NUM(el_u8_cb, "c6r1", &mesiPiesi);
-M2_LABEL(el_TempMat,"c6r1", "mediaMat" );
+M2_LABEL(el_TempMat,"c6r1", &mediaMat );
 M2_LABEL(el_Mat, NULL , "valueMat" );
 M2_LABEL(el_TempFer, NULL, "mediaFer" );
 M2_LABEL(el_Fer, NULL , "valueFer" );
