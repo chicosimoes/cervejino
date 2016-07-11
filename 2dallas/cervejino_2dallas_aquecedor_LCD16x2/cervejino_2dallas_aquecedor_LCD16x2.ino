@@ -26,12 +26,12 @@ int comandoFer;
 int comandoMat;//variavel que vai conter o estado do que fazer
 float ultimaTempFer;
 float ultimaTempMat;
-float temperaturaMaturacao; //= 14;//trashoad de maturacao
-float temperaturaFermentacao; //= 27;//trashoad de fermentacao
+float temperaturaMaturacao;// = 14;//trashoad de maturacao
+float temperaturaFermentacao;//= 27;//trashoad de fermentacao
 
 int botaoFermenos = 6;  //button which decrease desired T / botao menos fermentacao
 int botaoFermais = 9;  //button which increase desired T / botao mais fermentador
-int botaoMatmenos = 1;  //button which decrease desired T / botao menos fermentacao
+int botaoMatmenos = 8;  //button which decrease desired T / botao menos fermentacao
 int botaoMatmais = 3;  //button which increase desired T / botao mais fermentador
 
 #define ONE_WIRE_BUS_1 4 // define o pino do termometro de maturacao
@@ -43,6 +43,22 @@ DallasTemperature sensor_MAT(&oneWire_MAT); //cria as variaveis do sensor
 DallasTemperature sensor_FER(&oneWire_FER); //cria as variaveis do sensor
 
 LiquidCrystal lcd(A3,A2,A1,A0,13,12);
+/*
+ligacao:
+lcd:
+1-terra
+2-vcc
+3-meio pontetenciometro
+15-restor100-vcc
+16-terra
+arduino-lcd
+A0-12
+A1-11
+A2-6
+A3-4
+12-14
+13-13
+*/
 
 //int temperaturaMaturacao = 14;//trashoad de maturacao
 //int temperaturaFermentacao = 17;//trashoad de fermentacao
@@ -129,7 +145,7 @@ if (digitalRead(botaoMatmais)==1)
  
                      }
  
-   delay(200);      
+ //  delay(200);      
  
            
   
